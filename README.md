@@ -10,47 +10,47 @@ So say one needs to create an application that when a new call is being added to
 
 ```
 class QueueEntryFilter: public ShiftNineFilter {
-        public:
-                bool valid( std::string event ) {
-                     if( event.find("QueueEntry") != std::string::npos ) 
-                            return 1;
+  public:
+    bool valid( std::string event ) {
+      if( event.find("QueueEntry") != std::string::npos ) 
+        return 1;
 
-                     return 0;
-               }
+      return 0;
+    }
 ```
 
 Then you create a processor that will actually raise the alert on QueueEntry:
 
 ```
 class QueueEntryNotify: public ShiftNineProcessor {
-        public:
-                bool process( ShiftNineAsteriskEvent *event ) {
-                        // Add code here to raise the alert.
-                }
+  public:
+    bool process( ShiftNineAsteriskEvent *event ) {
+      // Add code here to raise the alert.
+    }
 }
 ```
 
 And finally merge the two:
 ```
-                        ShiftNine _proxy("http://<ajam>", "manager", "secret");
+ShiftNine _proxy("http://<ajam>", "manager", "secret");
 
-                        QueueEntryFilter _filter;
-                        QueueEntryProcessor _processor;
+QueueEntryFilter _filter;
+QueueEntryProcessor _processor;
 
-                        _proxy.setFilter(&_filter);
-                        _proxy.setProcessor(&_processor);
+_proxy.setFilter(&_filter);
+_proxy.setProcessor(&_processor);
 
-                        try {
-                                _proxy.login();
+try {
+  _proxy.login();
 
-                                for( ;; ) {
-                                        _proxy.waitEvent();
-                                }
-                        } catch( ShiftNineException &er ) {
-                                cout << "[Error]: ShiftNine Library error: " << er.what() << endl;
-                                _proxy.logoff();
-                                return 1;
-                        }
+  for( ;; ) {
+    _proxy.waitEvent();
+  }
+} catch( ShiftNineException &er ) {
+  cout << "[Error]: ShiftNine Library error: " << er.what() << endl;
+  _proxy.logoff();
+  return 1;
+}
 ```
 
 And that's pretty much it.
